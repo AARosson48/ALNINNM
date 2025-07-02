@@ -1,3 +1,4 @@
+# ALNINNM - Anonymous List No Identification Needed No Managed-Moderation
 # Anonymous Personals - Node.js Dating Site
 
 A text-based, anonymous dating personals website with dynamic location tags, self-moderating ranking, and transparent user behavior tracking. Built with Node.js, Express, and MySQL for easy deployment on CloudPanel.
