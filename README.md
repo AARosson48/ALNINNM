@@ -245,7 +245,7 @@ For issues and questions:
 
 ## License
 
-MIT License - Feel free to modify and distribute.
+GNU GENERAL PUBLIC LICENSE
 
 ## Version History
 
