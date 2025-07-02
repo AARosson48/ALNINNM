@@ -1,0 +1,151 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="mb-3">
+            <a href="/" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Ads
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-start">
+                <h4 class="card-title mb-0"><%= ad.title %></h4>
+                <small class="text-muted">
+                    <i class="fas fa-clock"></i> <%= ad.expiresIn %>
+                </small>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">
+                        <i class="fas fa-map-marker-alt"></i> <%= ad.location %> • 
+                        <%= ad.timeAgo %>
+                        <% if (ad.repost_count > 0) { %>
+                            • <i class="fas fa-redo"></i> Reposted <%= ad.repost_count %> times
+                        <% } %>
+                    </small>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="card-text" style="white-space: pre-wrap;"><%= ad.body %></p>
+                </div>
+                
+                <% if (ad.contact_email) { %>
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-envelope"></i> Contact This Person
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <i class="fas fa-shield-alt"></i> 
+                                <strong>Privacy Protected:</strong> Your message will be sent anonymously. 
+                                The poster can reply directly to your email, but your address stays private until you choose to share it.
+                            </div>
+                            
+                            <form id="contactForm">
+                                <input type="hidden" name="ad_id" value="<%= ad.id %>">
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="sender_email" class="form-label">Your Email *</label>
+                                            <input type="email" class="form-control" id="sender_email" name="sender_email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="sender_name" class="form-label">Your Name (Optional)</label>
+                                            <input type="text" class="form-control" id="sender_name" name="sender_name" 
+                                                   placeholder="How should they address you?">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Subject *</label>
+                                    <input type="text" class="form-control" id="subject" name="subject" 
+                                           placeholder="What's this about?" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message *</label>
+                                    <textarea class="form-control" id="message" name="message" rows="5" 
+                                              placeholder="Write your message here..." required></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary" id="sendBtn">
+                                    <i class="fas fa-paper-plane"></i> Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-secondary">
+                        <i class="fas fa-info-circle"></i> 
+                        This person hasn't provided contact information.
+                    </div>
+                <% } %>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-success vote-btn" 
+                                data-ad-id="<%= ad.id %>" data-vote-type="up">
+                            <i class="fas fa-thumbs-up"></i> <%= ad.up_votes %>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger vote-btn" 
+                                data-ad-id="<%= ad.id %>" data-vote-type="down">
+                            <i class="fas fa-thumbs-down"></i> <%= ad.down_votes %>
+                        </button>
+                    </div>
+                    
+                    <small class="text-muted">
+                        Poster: ↑<%= ad.poster_up_votes_given %> ↓<%= ad.poster_down_votes_given %>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            
+            const formData = new FormData(contactForm);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Message sent successfully! They will receive your message and can reply directly to your email.');
+                    contactForm.reset();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error sending message. Please try again.');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+            }
+        });
+    }
+});
+</script>

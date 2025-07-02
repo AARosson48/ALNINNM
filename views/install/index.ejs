@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Install Anonymous Personals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card mt-5">
+                    <div class="card-header text-center">
+                        <h2><i class="fas fa-heart text-danger"></i> Anonymous Personals</h2>
+                        <p class="text-muted">Installation Wizard</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle"></i> Welcome!</h5>
+                            <p class="mb-0">This wizard will help you set up your Anonymous Personals website. You'll need MySQL database credentials and an email service API key.</p>
+                        </div>
+
+                        <form id="installForm">
+                            <h5 class="mb-3">Database Configuration</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="host" class="form-label">Database Host</label>
+                                        <input type="text" class="form-control" id="host" name="host" value="localhost" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="database" class="form-label">Database Name</label>
+                                        <input type="text" class="form-control" id="database" name="database" placeholder="anonymous_personals" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="user" class="form-label">Database User</label>
+                                        <input type="text" class="form-control" id="user" name="user" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Database Password</label>
+                                        <input type="password" class="form-control" id="password" name="password">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-outline-primary" id="testConnection">
+                                    <i class="fas fa-plug"></i> Test Database Connection
+                                </button>
+                                <div id="connectionResult" class="mt-2"></div>
+                            </div>
+
+                            <hr>
+
+                            <h5 class="mb-3">Email Service Configuration</h5>
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Email Required:</strong> The anonymous email relay system requires an email service API.
+                                Choose from SendGrid, Mailgun, Resend, Postmark, or SMTP.
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="emailProvider" class="form-label">Email Provider</label>
+                                <select class="form-select" id="emailProvider" name="emailProvider" required>
+                                    <option value="">Choose email provider...</option>
+                                    <option value="sendgrid">SendGrid (Recommended - Free 100 emails/day)</option>
+                                    <option value="mailgun">Mailgun (5,000 emails/month free)</option>
+                                    <option value="resend">Resend (3,000 emails/month free)</option>
+                                    <option value="postmark">Postmark (100 emails/month free)</option>
+                                    <option value="smtp">SMTP (Fallback option)</option>
+                                </select>
+                            </div>
+
+                            <!-- SendGrid Configuration -->
+                            <div id="sendgridConfig" class="email-config" style="display: none;">
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">SendGrid Configuration</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="sendgridApiKey" class="form-label">SendGrid API Key</label>
+                                            <input type="password" class="form-control" id="sendgridApiKey" name="sendgridApiKey" 
+                                                   placeholder="SG.xxxxxxxxxxxxxxxx">
+                                            <div class="form-text">
+                                                <strong>Setup Instructions:</strong><br>
+                                                1. Sign up at <a href="https://sendgrid.com" target="_blank">SendGrid</a><br>
+                                                2. Go to Settings → <a href="https://app.sendgrid.com/settings/api_keys" target="_blank">API Keys</a><br>
+                                                3. Create API Key with "Mail Send" permissions<br>
+                                                4. Copy the API key (starts with "SG.")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Mailgun Configuration -->
+                            <div id="mailgunConfig" class="email-config" style="display: none;">
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Mailgun Configuration</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="mailgunApiKey" class="form-label">Mailgun API Key</label>
+                                                    <input type="password" class="form-control" id="mailgunApiKey" name="mailgunApiKey">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="mailgunDomain" class="form-label">Mailgun Domain</label>
+                                                    <input type="text" class="form-control" id="mailgunDomain" name="mailgunDomain" 
+                                                           placeholder="mg.yoursite.com">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="mailgunUrl" class="form-label">Mailgun URL</label>
+                                            <select class="form-select" id="mailgunUrl" name="mailgunUrl">
+                                                <option value="https://api.mailgun.net">US Region (api.mailgun.net)</option>
+                                                <option value="https://api.eu.mailgun.net">EU Region (api.eu.mailgun.net)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-text">
+                                            <strong>Setup Instructions:</strong><br>
+                                            1. Sign up at <a href="https://mailgun.com" target="_blank">Mailgun</a><br>
+                                            2. Add and verify your domain<br>
+                                            3. Get API key from dashboard
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Resend Configuration -->
+                            <div id="resendConfig" class="email-config" style="display: none;">
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Resend Configuration</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="resendApiKey" class="form-label">Resend API Key</label>
+                                            <input type="password" class="form-control" id="resendApiKey" name="resendApiKey" 
+                                                   placeholder="re_xxxxxxxxxxxxxxxx">
+                                            <div class="form-text">
+                                                <strong>Setup Instructions:</strong><br>
+                                                1. Sign up at <a href="https://resend.com" target="_blank">Resend</a><br>
+                                                2. Verify your domain<br>
+                                                3. Create API key from <a href="https://resend.com/api-keys" target="_blank">API Keys page</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Postmark Configuration -->
+                            <div id="postmarkConfig" class="email-config" style="display: none;">
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Postmark Configuration</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="postmarkApiKey" class="form-label">Postmark Server API Token</label>
+                                            <input type="password" class="form-control" id="postmarkApiKey" name="postmarkApiKey" 
+                                                   placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+                                            <div class="form-text">
+                                                <strong>Setup Instructions:</strong><br>
+                                                1. Sign up at <a href="https://postmarkapp.com" target="_blank">Postmark</a><br>
+                                                2. Create a server<br>
+                                                3. Add and verify sender signature<br>
+                                                4. Get Server API Token from <a href="https://account.postmarkapp.com/servers" target="_blank">servers page</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SMTP Configuration -->
+                            <div id="smtpConfig" class="email-config" style="display: none;">
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">SMTP Configuration</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="smtpHost" class="form-label">SMTP Host</label>
+                                                    <input type="text" class="form-control" id="smtpHost" name="smtpHost" 
+                                                           placeholder="smtp.gmail.com">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="smtpPort" class="form-label">SMTP Port</label>
+                                                    <input type="number" class="form-control" id="smtpPort" name="smtpPort" 
+                                                           value="587">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="smtpUser" class="form-label">SMTP Username</label>
+                                                    <input type="text" class="form-control" id="smtpUser" name="smtpUser" 
+                                                           placeholder="your-email@gmail.com">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="smtpPass" class="form-label">SMTP Password</label>
+                                                    <input type="password" class="form-control" id="smtpPass" name="smtpPass" 
+                                                           placeholder="App password or SMTP password">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-text">
+                                            <strong>Gmail Setup:</strong><br>
+                                            1. Enable 2-factor authentication<br>
+                                            2. Generate app password<br>
+                                            3. Use app password instead of regular password
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <button type="button" class="btn btn-outline-info" id="testEmail">
+                                    <i class="fas fa-envelope"></i> Test Email Configuration
+                                </button>
+                                <div id="emailResult" class="mt-2"></div>
+                            </div>
+
+                            <hr>
+
+                            <h5 class="mb-3">Site Configuration</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="siteName" class="form-label">Site Name</label>
+                                        <input type="text" class="form-control" id="siteName" name="siteName" value="Anonymous Personals">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="siteUrl" class="form-label">Site URL</label>
+                                        <input type="url" class="form-control" id="siteUrl" name="siteUrl" placeholder="https://yoursite.com">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="fromEmail" class="form-label">From Email *</label>
+                                        <input type="email" class="form-control" id="fromEmail" name="fromEmail" 
+                                               placeholder="noreply@yoursite.com" required>
+                                        <div class="form-text">Must be verified with your email provider</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="relayDomain" class="form-label">Relay Domain</label>
+                                <input type="text" class="form-control" id="relayDomain" name="relayDomain" 
+                                       placeholder="relay.yoursite.com" required>
+                                <div class="form-text">
+                                    Domain used for anonymous email relay addresses
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg" id="installBtn" disabled>
+                                    <i class="fas fa-rocket"></i> Complete Installation
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4 mb-5">
+                    <small class="text-muted">
+                        Make sure your MySQL database is running and accessible before proceeding.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const testBtn = document.getElementById('testConnection');
+            const installBtn = document.getElementById('installBtn');
+            const form = document.getElementById('installForm');
+            const result = document.getElementById('connectionResult');
+            const emailProviderSelect = document.getElementById('emailProvider');
+            let connectionTested = false;
+
+            // Show/hide email configuration based on provider selection
+            emailProviderSelect.addEventListener('change', function() {
+                const provider = this.value;
+                const configs = document.querySelectorAll('.email-config');
+                
+                configs.forEach(config => config.style.display = 'none');
+                
+                if (provider) {
+                    const configDiv = document.getElementById(provider + 'Config');
+                    if (configDiv) {
+                        configDiv.style.display = 'block';
+                    }
+                }
+                updateInstallButton();
+            });
+
+            testBtn.addEventListener('click', async function() {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                
+                testBtn.disabled = true;
+                testBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+                
+                try {
+                    const response = await fetch('/install/test-connection', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result_data = await response.json();
+                    
+                    if (result_data.success) {
+                        result.innerHTML = '<div class="alert alert-success"><i class="fas fa-check"></i> ' + result_data.message + '</div>';
+                        connectionTested = true;
+                        updateInstallButton();
+                    } else {
+                        result.innerHTML = '<div class="alert alert-danger"><i class="fas fa-times"></i> ' + result_data.message + '</div>';
+                        connectionTested = false;
+                        updateInstallButton();
+                    }
+                } catch (error) {
+                    result.innerHTML = '<div class="alert alert-danger"><i class="fas fa-times"></i> Connection test failed</div>';
+                    connectionTested = false;
+                    updateInstallButton();
+                } finally {
+                    testBtn.disabled = false;
+                    testBtn.innerHTML = '<i class="fas fa-plug"></i> Test Database Connection';
+                }
+            });
+
+            // Email test functionality
+            const testEmailBtn = document.getElementById('testEmail');
+            const emailResult = document.getElementById('emailResult');
+
+            testEmailBtn.addEventListener('click', async function() {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                
+                if (!data.emailProvider) {
+                    emailResult.innerHTML = '<div class="alert alert-warning">Please select an email provider first.</div>';
+                    return;
+                }
+                
+                testEmailBtn.disabled = true;
+                testEmailBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Testing...';
+                
+                try {
+                    const response = await fetch('/install/test-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result_data = await response.json();
+                    
+                    if (result_data.success) {
+                        emailResult.innerHTML = '<div class="alert alert-success"><i class="fas fa-check"></i> ' + result_data.message + '</div>';
+                    } else {
+                        emailResult.innerHTML = '<div class="alert alert-danger"><i class="fas fa-times"></i> ' + result_data.message + '</div>';
+                    }
+                } catch (error) {
+                    emailResult.innerHTML = '<div class="alert alert-danger"><i class="fas fa-times"></i> Email test failed</div>';
+                } finally {
+                    testEmailBtn.disabled = false;
+                    testEmailBtn.innerHTML = '<i class="fas fa-envelope"></i> Test Email Configuration';
+                }
+            });
+
+            function updateInstallButton() {
+                const emailProvider = emailProviderSelect.value;
+                const fromEmail = document.getElementById('fromEmail').value;
+                
+                if (connectionTested && emailProvider && fromEmail) {
+                    installBtn.disabled = false;
+                } else {
+                    installBtn.disabled = true;
+                }
+            }
+
+            // Update install button when from email changes
+            document.getElementById('fromEmail').addEventListener('input', updateInstallButton);
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (!connectionTested) {
+                    alert('Please test the database connection first.');
+                    return;
+                }
+                
+                installBtn.disabled = true;
+                installBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Installing...';
+                
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                
+                try {
+                    const response = await fetch('/install/complete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    if (response.ok) {
+                        alert('Installation completed successfully! Redirecting to your site...');
+                        window.location.href = '/';
+                    } else {
+                        alert('Installation failed. Please check your settings and try again.');
+                    }
+                } catch (error) {
+                    alert('Installation failed. Please try again.');
+                } finally {
+                    installBtn.disabled = false;
+                    installBtn.innerHTML = '<i class="fas fa-rocket"></i> Complete Installation';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

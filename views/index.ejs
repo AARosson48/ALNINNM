@@ -1,0 +1,117 @@
+<div class="text-center mb-5">
+    <h1 class="display-4 mb-3">
+        <i class="fas fa-heart text-danger"></i> Anonymous Personals
+    </h1>
+    <p class="lead mb-4">Connect anonymously. No registration required. Text-only personal ads.</p>
+    <a href="/post" class="btn btn-primary btn-lg">
+        <i class="fas fa-plus"></i> Post Your Ad
+    </a>
+</div>
+
+<!-- Search Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Find Someone Special</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="/">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="search" placeholder="Search ads..." value="<%= search %>">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="location">
+                        <option value="">All locations</option>
+                        <% locations.forEach(loc => { %>
+                            <option value="<%= loc.name %>" <%= location === loc.name ? 'selected' : '' %>>
+                                <%= loc.name %> (<%= loc.ad_count %>)
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="sort">
+                        <option value="recent" <%= sort === 'recent' ? 'selected' : '' %>>Most Recent</option>
+                        <option value="popular" <%= sort === 'popular' ? 'selected' : '' %>>Most Popular</option>
+                        <option value="controversial" <%= sort === 'controversial' ? 'selected' : '' %>>Most Voted</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Ads List -->
+<div class="row">
+    <% if (ads.length === 0) { %>
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4>No ads found</h4>
+            <p class="text-muted">Be the first to post in this area!</p>
+            <a href="/post" class="btn btn-primary">Post Your Ad</a>
+        </div>
+    <% } else { %>
+        <% ads.forEach(ad => { %>
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-start">
+                        <h5 class="card-title mb-0">
+                            <a href="/ad/<%= ad.id %>" class="text-decoration-none"><%= ad.title %></a>
+                        </h5>
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> <%= ad.expiresIn %>
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt"></i> <%= ad.location %> • 
+                                <%= ad.timeAgo %>
+                                <% if (ad.repost_count > 0) { %>
+                                    • <i class="fas fa-redo"></i> Reposted <%= ad.repost_count %> times
+                                <% } %>
+                            </small>
+                        </div>
+                        
+                        <p class="card-text">
+                            <%= ad.body.length > 200 ? ad.body.substring(0, 200) + '...' : ad.body %>
+                        </p>
+                        
+                        <% if (ad.body.length > 200) { %>
+                            <a href="/ad/<%= ad.id %>" class="text-primary">Read more...</a>
+                        <% } %>
+                        
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-success btn-sm vote-btn" 
+                                        data-ad-id="<%= ad.id %>" data-vote-type="up">
+                                    <i class="fas fa-thumbs-up"></i> <%= ad.up_votes %>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm vote-btn" 
+                                        data-ad-id="<%= ad.id %>" data-vote-type="down">
+                                    <i class="fas fa-thumbs-down"></i> <%= ad.down_votes %>
+                                </button>
+                            </div>
+                            
+                            <small class="text-muted">
+                                Poster: ↑<%= ad.poster_up_votes_given %> ↓<%= ad.poster_down_votes_given %>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+        
+        <% if (hasMore) { %>
+            <div class="col-12 text-center">
+                <a href="?page=<%= currentPage + 1 %>&search=<%= search %>&location=<%= location %>&sort=<%= sort %>" 
+                   class="btn btn-outline-primary">Load More</a>
+            </div>
+        <% } %>
+    <% } %>
+</div>

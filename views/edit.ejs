@@ -1,0 +1,148 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="mb-3">
+            <a href="/ad/<%= ad.id %>" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Ad
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Edit Your Personal Ad</h4>
+                <small class="text-muted">Update your ad details below</small>
+            </div>
+            <div class="card-body">
+                <form id="editForm">
+                    <input type="hidden" name="id" value="<%= ad.id %>">
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               value="<%= ad.title %>" maxlength="200" required>
+                        <div class="form-text">
+                            <span id="titleCount"><%= ad.title.length %></span>/200 characters
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="body" class="form-label">Description *</label>
+                        <textarea class="form-control" id="body" name="body" rows="6" 
+                                  maxlength="2000" required><%= ad.body %></textarea>
+                        <div class="form-text">
+                            <span id="bodyCount"><%= ad.body.length %></span>/2000 characters
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location *</label>
+                        <input type="text" class="form-control" id="location" name="location" 
+                               value="<%= ad.location %>" maxlength="100" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contact_method" class="form-label">Contact Method (Optional)</label>
+                        <input type="text" class="form-control" id="contact_method" name="contact_method" 
+                               value="<%= ad.contact_method || '' %>" maxlength="500">
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary" id="updateBtn">
+                            <i class="fas fa-save"></i> Update Ad
+                        </button>
+                        <button type="button" class="btn btn-danger" id="deleteBtn">
+                            <i class="fas fa-trash"></i> Delete Ad
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title');
+    const bodyInput = document.getElementById('body');
+    const titleCount = document.getElementById('titleCount');
+    const bodyCount = document.getElementById('bodyCount');
+    const form = document.getElementById('editForm');
+    const updateBtn = document.getElementById('updateBtn');
+    const deleteBtn = document.getElementById('deleteBtn');
+
+    // Character counters
+    titleInput.addEventListener('input', function() {
+        titleCount.textContent = this.value.length;
+    });
+
+    bodyInput.addEventListener('input', function() {
+        bodyCount.textContent = this.value.length;
+    });
+
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        updateBtn.disabled = true;
+        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        try {
+            const response = await fetch(`/api/ads/${data.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Ad updated successfully! Redirecting...');
+                window.location.href = `/ad/${data.id}`;
+            } else {
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Error updating ad. Please try again.');
+        } finally {
+            updateBtn.disabled = false;
+            updateBtn.innerHTML = '<i class="fas fa-save"></i> Update Ad';
+        }
+    });
+
+    // Delete functionality
+    deleteBtn.addEventListener('click', async function() {
+        if (!confirm('Are you sure you want to delete this ad? This action cannot be undone.')) {
+            return;
+        }
+        
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+        
+        const adId = document.querySelector('input[name="id"]').value;
+        
+        try {
+            const response = await fetch(`/api/ads/${adId}`, {
+                method: 'DELETE'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Ad deleted successfully! Redirecting to home page...');
+                window.location.href = '/';
+            } else {
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Error deleting ad. Please try again.');
+        } finally {
+            deleteBtn.disabled = false;
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Ad';
+        }
+    });
+});
+</script>

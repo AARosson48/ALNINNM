@@ -1,0 +1,124 @@
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Post Your Personal Ad</h4>
+                <small class="text-muted">Create an anonymous personal ad that will be visible for 3 days</small>
+            </div>
+            <div class="card-body">
+                <form id="postForm">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               placeholder="e.g., Looking for someone special in downtown..." 
+                               maxlength="200" required>
+                        <div class="form-text">
+                            <span id="titleCount">0</span>/200 characters
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="body" class="form-label">Description *</label>
+                        <textarea class="form-control" id="body" name="body" rows="6" 
+                                  placeholder="Describe yourself and what you're looking for..." 
+                                  maxlength="2000" required></textarea>
+                        <div class="form-text">
+                            <span id="bodyCount">0</span>/2000 characters
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location *</label>
+                        <input type="text" class="form-control" id="location" name="location" 
+                               placeholder="e.g., Downtown Nashville, Brooklyn Heights, etc." 
+                               maxlength="100" required>
+                        <div class="form-text">
+                            Be general for privacy (e.g., neighborhood, not exact address)
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contact_email" class="form-label">Your Email Address *</label>
+                        <input type="email" class="form-control" id="contact_email" name="contact_email" 
+                               placeholder="your.email@example.com" required>
+                        <div class="form-text">
+                            <i class="fas fa-shield-alt text-success"></i> Your email will be kept private. 
+                            Interested people will contact you through our anonymous relay system.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <h6>Important Notes:</h6>
+                        <ul class="mb-0 small">
+                            <li>No images allowed - text only</li>
+                            <li>One ad per device/IP address</li>
+                            <li>Ads automatically expire after 3 days</li>
+                            <li>Your email is protected by our anonymous relay system</li>
+                            <li>Community voting affects visibility</li>
+                            <li>Your voting history is visible to others</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Post Ad
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title');
+    const bodyInput = document.getElementById('body');
+    const titleCount = document.getElementById('titleCount');
+    const bodyCount = document.getElementById('bodyCount');
+    const form = document.getElementById('postForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Character counters
+    titleInput.addEventListener('input', function() {
+        titleCount.textContent = this.value.length;
+    });
+
+    bodyInput.addEventListener('input', function() {
+        bodyCount.textContent = this.value.length;
+    });
+
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        try {
+            const response = await fetch('/api/ads', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Ad posted successfully! Redirecting to home page...');
+                window.location.href = '/';
+            } else {
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Error posting ad. Please try again.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Ad';
+        }
+    });
+});
+</script>

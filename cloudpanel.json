@@ -1,0 +1,37 @@
+{
+  "name": "Anonymous Personals",
+  "type": "nodejs",
+  "version": "1.0.0",
+  "description": "Anonymous dating personals website",
+  "requirements": {
+    "node": ">=16.0.0",
+    "mysql": ">=5.7"
+  },
+  "installation": {
+    "steps": [
+      "Upload files to domain directory",
+      "Run 'npm install' to install dependencies",
+      "Start application with 'npm start'",
+      "Visit domain to complete installation wizard"
+    ]
+  },
+  "configuration": {
+    "app_root": "/",
+    "startup_file": "server.js",
+    "app_port": 3000,
+    "environment": "production"
+  },
+  "database": {
+    "type": "mysql",
+    "required": true,
+    "auto_create": true
+  },
+  "features": [
+    "Anonymous posting system",
+    "Email relay for privacy",
+    "Community voting",
+    "Auto-expiring ads",
+    "Dynamic locations",
+    "Mobile responsive"
+  ]
+}

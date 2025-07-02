@@ -1,0 +1,71 @@
+ANONYMOUS PERSONALS - INSTALLATION GUIDE
+=======================================
+
+QUICK START (CloudPanel)
+-----------------------
+1. Upload all files to your domain folder
+2. Run: npm install
+3. Run: npm start
+4. Visit your domain and follow the setup wizard
+
+REQUIREMENTS
+-----------
+- Node.js 16.0.0+
+- MySQL 5.7+
+- 50MB disk space
+- CloudPanel or web server
+
+DETAILED INSTALLATION
+--------------------
+
+Step 1: Upload Files
+- Extract all files to your web directory
+- Ensure all files have proper permissions (755 for directories, 644 for files)
+
+Step 2: Install Dependencies
+- SSH into your server or use CloudPanel terminal
+- Navigate to your site directory
+- Run: npm install
+
+Step 3: Database Setup
+- Create a MySQL database
+- Note down: host, username, password, database name
+
+Step 4: Run Installation
+- Start the app: npm start
+- Visit: http://yourdomain.com/install
+- Enter your database details
+- Complete the installation wizard
+
+Step 5: Configure Web Server (if not using CloudPanel)
+- Set up reverse proxy to Node.js app
+- Configure SSL certificates
+- Set up process management (PM2 recommended)
+
+CLOUDPANEL SPECIFIC STEPS
+------------------------
+1. Create new "Node.js" site in CloudPanel
+2. Upload files to the site directory
+3. In CloudPanel Node.js settings:
+   - App Port: 3000
+   - App Root: /
+   - Startup File: server.js
+4. Install dependencies via terminal
+5. Start the application
+6. Visit your domain to complete setup
+
+TROUBLESHOOTING
+--------------
+- If installation page doesn't load, check Node.js is running
+- Database connection errors: verify MySQL credentials
+- Permission errors: ensure proper file permissions
+- Port conflicts: change PORT in .env file
+
+POST-INSTALLATION
+----------------
+- Test posting an ad
+- Test voting functionality
+- Configure any additional settings
+- Set up regular backups
+
+For support, check README.md for detailed documentation.
